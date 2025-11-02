@@ -1,4 +1,6 @@
 # RAF - DB Editor
+![Python 3.13](https://img.shields.io/badge/Python-3.13-blue?logo=python\&logoColor=white)
+![uv](https://img.shields.io/badge/Build-uv-orange?logo=astral-sh)
 
 A lightweight tool for converting and editing `.dat` binary database files used in games. Easily transform `.dat` files to JSON and back, inspect object data, and make modifications in a user-friendly format.
 
