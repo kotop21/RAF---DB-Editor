@@ -3,8 +3,8 @@ from pathlib import Path
 
 def save_objects_json(objects, filename="objects.json"):
     """
-    objects: список кортежей (id, name, hp)
-    filename: имя файла 
+    objects: (id, name, hp)
+    filename: name file
     """
     root_path = Path.cwd()
     path = root_path / filename
