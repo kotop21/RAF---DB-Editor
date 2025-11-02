@@ -1,10 +1,70 @@
-## Clone
-1. `git clone https://github.com/kotop21/RAF---DB-Editor.git`
-## install uv
-2. `curl -LsSf https://astral.sh/uv/install.sh | sh `
-## install dep
-3. `uv sync`
-## activation vm
-4. `source .venv/bin/activate`
-## run project 
-5. `uv run main.py`
+# RAF - DB Editor
+
+A lightweight tool for converting and editing `.dat` binary database files used in games. Easily transform `.dat` files to JSON and back, inspect object data, and make modifications in a user-friendly format.
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/kotop21/RAF---DB-Editor.git
+cd RAF---DB-Editor
+```
+
+### 2. Установить **uv**
+
+#### 🖥️ macOS / Linux
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | less
+```
+
+#### 🪟 Windows
+
+```powershell
+powershell -c "irm https://astral.sh/uv/install.ps1 | more"
+```
+
+### 3. Install Dependencies
+
+```bash
+uv sync
+```
+
+### 4. Activate Virtual Environment
+
+```bash
+source .venv/bin/activate
+```
+
+### 5. Run the Project
+
+```bash
+uv run main.py
+```
+
+---
+
+## 🧰 Features
+
+* Convert `.dat` files to `.json` for easy editing.
+* Convert `.json` files back to `.dat`.
+* Automatically detect and parse object structures.
+
+---
+
+## ⚠️ Notes
+
+* Modifying **ID** or **Name** fields in JSON may cause the game to misread objects. Change them only if you know what you’re doing.
+* When exporting to JSON, any existing file will be **overwritten**.
+
+---
+
+## 🧑‍💻 Requirements
+
+* Python 3.10+
+* [uv](https://docs.astral.sh/uv/)
+
+Made with ❤️ by [kotop21](https://github.com/kotop21)
