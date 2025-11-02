@@ -1,7 +1,7 @@
 [project]
 name = "dat-to-hex"
 version = "0.0.3"
-description = "Author: xxds :)"
+description = "Author: kotop21 :)"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
