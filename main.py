@@ -1,9 +1,9 @@
 from colorama import init, Fore, Style
-from services.backup import backup_file
+from services.backup_file import backup_file
 from services.read_objects import read_objects
 from services.save_objects_json import save_objects_json
 from services.binary_utils import update_object_param
-from
+from tqdm import tqdm
 import json
 from pathlib import Path
 
@@ -33,7 +33,9 @@ def json_to_dat():
         objects = json.load(f)
 
     updated = 0
-    for obj in objects:
+    total = len(objects)
+
+    for obj in tqdm(objects, desc="Updating objects", colour="cyan", ncols=80):
         name = obj.get("name")
         hp = obj.get("hp")
 
@@ -43,9 +45,9 @@ def json_to_dat():
         if update_object_param(DB_PATH, name, HP_OFFSET, hp):
             updated += 1
         else:
-            print(Fore.RED + f"❌ Object with name '{name}' not found in binary file!" + Style.RESET_ALL)
+            tqdm.write(Fore.RED + f"❌ Object '{name}' not found in binary file!" + Style.RESET_ALL)
 
-    print(Fore.GREEN + f"✅ Successfully applied changes: {updated}" + Style.RESET_ALL)
+    print(Fore.GREEN + f"\n✅ Successfully applied changes: {updated}/{total}" + Style.RESET_ALL)
 
 
 def main():

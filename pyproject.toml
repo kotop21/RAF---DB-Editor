@@ -8,4 +8,5 @@ dependencies = [
     "colorama>=0.4.6",
     "construct==2.10.68",
     "construct-editor>=0.1.5",
+    "tqdm>=4.67.1",
 ]
