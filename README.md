@@ -13,7 +13,7 @@ git clone https://github.com/kotop21/RAF---DB-Editor.git
 cd RAF---DB-Editor
 ```
 
-### 2. Установить **uv**
+### 2. Install **uv**
 
 #### 🖥️ macOS / Linux
 
