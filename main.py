@@ -5,13 +5,16 @@ from services.save_objects_json import save_objects_json
 from services.binary_utils import update_object_param
 from tqdm import tqdm
 import json
+
 from pathlib import Path
+
+from config import HP_OFFSET, DAMAGE_OFFSET
 
 init(autoreset=True)
 
 DB_PATH = "dbobjects.dat"
 JSON_PATH = "objects.json"
-HP_OFFSET = 0x78
+
 
 
 def dat_to_json():
@@ -32,21 +35,33 @@ def json_to_dat():
     with open(json_path, "r", encoding="utf-8") as f:
         objects = json.load(f)
 
+    db_bytes = bytearray(Path(DB_PATH).read_bytes())
     updated = 0
     total = len(objects)
 
     for obj in tqdm(objects, desc="Updating objects", colour="cyan", ncols=80):
         name = obj.get("name")
         hp = obj.get("hp")
+        damage = obj.get("damage")
 
-        if not name or not isinstance(hp, int):
+        if not name:
             continue
 
-        if update_object_param(DB_PATH, name, HP_OFFSET, hp):
-            updated += 1
-        else:
+        name_bytes = name.encode("ascii").ljust(0x60, b"\x00")
+        start = db_bytes.find(name_bytes)
+        if start == -1:
             tqdm.write(Fore.RED + f"❌ Object '{name}' not found in binary file!" + Style.RESET_ALL)
+            continue
 
+        if isinstance(hp, int):
+            db_bytes[start + HP_OFFSET:start + HP_OFFSET + 4] = hp.to_bytes(4, "little")
+            updated += 1
+
+        if isinstance(damage, int):
+            db_bytes[start + DAMAGE_OFFSET:start + DAMAGE_OFFSET + 4] = damage.to_bytes(4, "little")
+            updated += 1
+
+    Path(DB_PATH).write_bytes(db_bytes)
     print(Fore.GREEN + f"\n✅ Successfully applied changes: {updated}/{total}" + Style.RESET_ALL)
 
 

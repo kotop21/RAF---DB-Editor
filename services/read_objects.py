@@ -1,4 +1,6 @@
 import re 
+from config import HP_OFFSET, DAMAGE_OFFSET
+
 
 def read_objects(path):
     with open(path, "rb") as f:
@@ -10,14 +12,27 @@ def read_objects(path):
     for idx, match in enumerate(pattern.finditer(data), start=1):
         start = match.start()
         name_bytes = data[start:start + 0x60]  
-        hp_offset = start + 0x78
+
+        # --- HP ---
+        hp_offset = start + HP_OFFSET
         if hp_offset + 4 <= len(data):
             hp_bytes = data[hp_offset:hp_offset + 4]
             hp = int.from_bytes(hp_bytes, "little")
-            try:
-                name = name_bytes.decode("ascii", errors="ignore").strip("\x00 ")
-                objects.append((idx, name, hp))
-            except UnicodeDecodeError:
-                continue
+        else:
+            hp = None
+
+        # --- Урон ---
+        damage_offset = start + DAMAGE_OFFSET
+        if damage_offset + 4 <= len(data):
+            damage_bytes = data[damage_offset:damage_offset + 4]
+            damage = int.from_bytes(damage_bytes, "little")
+        else:
+            damage = None
+
+        try:
+            name = name_bytes.decode("ascii", errors="ignore").strip("\x00 ")
+            objects.append((idx, name, hp, damage))
+        except UnicodeDecodeError:
+            continue
 
     return objects
