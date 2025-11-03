@@ -21,7 +21,7 @@ def read_objects(path):
         else:
             hp = None
 
-        # --- Урон ---
+        # --- Damage ---
         damage_offset = start + DAMAGE_OFFSET
         if damage_offset + 4 <= len(data):
             damage_bytes = data[damage_offset:damage_offset + 4]
