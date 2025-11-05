@@ -9,7 +9,6 @@ wheels/
 # Virtual environments
 .venv
 
-dbobjects.dat
-dbobjects.dat.bac
-
-objects.json
+backup/
+db/
+unpack/

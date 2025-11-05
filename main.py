@@ -1,75 +1,74 @@
-from colorama import init, Fore, Style
-from services.backup_file import backup_file
-from services.read_objects import read_objects
-from services.save_objects_json import save_objects_json
-from services.binary_utils import update_object_param
-from tqdm import tqdm
-import json
 from pathlib import Path
+from colorama import init, Fore, Style
+from readchar import readkey, key
+
+from services.backup_file import backup_file
+from services.binary_utils import update_object_param
+from services.dat_json import (
+    dbobjects_to_json,
+    dbtechtree_to_json,
+)
+from services.dat_json_utils.json_to_dat import db_objects_json_to_dat, db_techtree_json_to_dat
+
+from config import DB_PATH
 
 init(autoreset=True)
 
-DB_PATH = "dbobjects.dat"
-JSON_PATH = "objects.json"
-HP_OFFSET = 0x78
-
-
-def dat_to_json():
-    print(Fore.CYAN + "\n📦 Converting dbobjects.dat → objects.json..." + Style.RESET_ALL)
-    objects = read_objects(DB_PATH)
-    save_objects_json(objects, JSON_PATH)
-    print(Fore.GREEN + f"✅ Successfully exported to {JSON_PATH}" + Style.RESET_ALL)
-
-
-def json_to_dat():
-    print(Fore.CYAN + "\n🔄 Applying changes from JSON to dat..." + Style.RESET_ALL)
-
-    json_path = Path(JSON_PATH)
-    if not json_path.exists():
-        print(Fore.RED + f"❌ File {JSON_PATH} not found!" + Style.RESET_ALL)
-        return
-
-    with open(json_path, "r", encoding="utf-8") as f:
-        objects = json.load(f)
-
-    updated = 0
-    total = len(objects)
-
-    for obj in tqdm(objects, desc="Updating objects", colour="cyan", ncols=80):
-        name = obj.get("name")
-        hp = obj.get("hp")
-
-        if not name or not isinstance(hp, int):
-            continue
-
-        if update_object_param(DB_PATH, name, HP_OFFSET, hp):
-            updated += 1
-        else:
-            tqdm.write(Fore.RED + f"❌ Object '{name}' not found in binary file!" + Style.RESET_ALL)
-
-    print(Fore.GREEN + f"\n✅ Successfully applied changes: {updated}/{total}" + Style.RESET_ALL)
-
 
 def main():
-    backup_file(DB_PATH)
-    while True:
-        print(Fore.MAGENTA + "\nWhat do you want to do?" + Style.RESET_ALL)
-        print("1. dat file → json file")
-        print("2. json file → dat file")
-        print("3. exit")
+    for path in DB_PATH:
+        backup_file(path)
 
-        choice = input(Fore.YELLOW + "\nYour choice: " + Style.RESET_ALL).strip()
-        if choice == "1":
-            dat_to_json()
-            break
-        elif choice == "2":
-            json_to_dat()
-            break
-        elif choice == "3":
-            print(Fore.CYAN + "👋 Exiting the program." + Style.RESET_ALL)
-            break
-        else:
-            print(Fore.RED + "❌ Invalid choice, please try again." + Style.RESET_ALL)
+    options = [
+        "dbobjects.dat → dbobjects.json",
+        "dbtechtree.dat → dbtechtree.json",
+        "json → dat (apply changes)",
+        "Exit"
+    ]
+    selected = 0
+
+    try:
+        while True:
+            print("\033c", end="")
+            print(Fore.MAGENTA + "\nWhat do you want to do?" + Style.RESET_ALL)
+
+            for i, option in enumerate(options):
+                prefix = "> " if i == selected else "  "
+                option_color = Fore.CYAN if i == selected else ""
+                number_color = Fore.BLUE + Style.BRIGHT
+                print(f"{option_color}{prefix}{number_color}[{i+1}]{Style.RESET_ALL} {option_color}{option}{Style.RESET_ALL}")
+
+            key_pressed = readkey()
+            choice = None
+
+            if key_pressed == key.UP:
+                selected = (selected - 1) % len(options)
+            elif key_pressed == key.DOWN:
+                selected = (selected + 1) % len(options)
+            elif key_pressed == key.ENTER:
+                choice = selected
+            elif key_pressed in ["1", "2", "3", "4"]:
+                choice = int(key_pressed) - 1
+            else:
+                continue
+
+            if choice is not None:
+                if choice == 0:
+                    dbobjects_to_json()
+                    break
+                elif choice == 1:
+                    dbtechtree_to_json()
+                    break
+                elif choice == 2:
+                    db_techtree_json_to_dat()
+                    db_objects_json_to_dat() 
+                    input(Fore.CYAN + "\n✅ Changes applied. Press Enter to continue..." + Style.RESET_ALL)
+                elif choice == 3:
+                    print(Fore.CYAN + "👋 Exiting the program." + Style.RESET_ALL)
+                    break
+
+    except KeyboardInterrupt:
+        print(Fore.CYAN + "\n👋 Exiting the program." + Style.RESET_ALL)
 
 
 if __name__ == "__main__":
