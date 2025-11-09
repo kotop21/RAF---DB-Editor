@@ -3,26 +3,36 @@ from colorama import init, Fore, Style
 from readchar import readkey, key
 
 from services.backup_file import backup_file
-from services.binary_utils import update_object_param
-from services.dat_json import (
-    dbobjects_to_json,
-    dbtechtree_to_json,
-)
-from services.dat_json_utils.json_to_dat import db_objects_json_to_dat, db_techtree_json_to_dat
+from services.dat_json import dat_to_json_generic, json_to_dat_generic
+from config import DB_FOLDER
 
-from config import DB_PATH
-
+SCHEMAS_FOLDER = Path("schemas")
 init(autoreset=True)
 
 
+def list_pairs():
+    """Автоматически находит пары (dat, schema)."""
+    dat_files = list(DB_FOLDER.glob("*.dat"))
+    pairs = []
+    for dat in dat_files:
+        schema = SCHEMAS_FOLDER / (dat.stem + ".json")
+        if schema.exists():
+            pairs.append((dat, schema))
+    return pairs
+
+
 def main():
-    for path in DB_PATH:
-        backup_file(path)
+    pairs = list_pairs()
+    if not pairs:
+        print(Fore.RED + "❌ No matching .dat and schema files found!" + Style.RESET_ALL)
+        return
+
+    for dat, _ in pairs:
+        backup_file(dat)
 
     options = [
-        "dbobjects.dat → dbobjects.json",
-        "dbtechtree.dat → dbtechtree.json",
-        "json → dat (apply changes)",
+        "Export all .dat → .json",
+        "Apply all .json → .dat",
         "Exit"
     ]
     selected = 0
@@ -35,40 +45,33 @@ def main():
             for i, option in enumerate(options):
                 prefix = "> " if i == selected else "  "
                 option_color = Fore.CYAN if i == selected else ""
-                number_color = Fore.BLUE + Style.BRIGHT
-                print(f"{option_color}{prefix}{number_color}[{i+1}]{Style.RESET_ALL} {option_color}{option}{Style.RESET_ALL}")
+                print(f"{option_color}{prefix}[{i+1}] {option}{Style.RESET_ALL}")
 
-            key_pressed = readkey()
+            k = readkey()
             choice = None
-
-            if key_pressed == key.UP:
+            if k == key.UP:
                 selected = (selected - 1) % len(options)
-            elif key_pressed == key.DOWN:
+            elif k == key.DOWN:
                 selected = (selected + 1) % len(options)
-            elif key_pressed == key.ENTER:
+            elif k == key.ENTER:
                 choice = selected
-            elif key_pressed in ["1", "2", "3", "4"]:
-                choice = int(key_pressed) - 1
-            else:
-                continue
+            elif k in ["1", "2", "3"]:
+                choice = int(k) - 1
 
-            if choice is not None:
-                if choice == 0:
-                    dbobjects_to_json()
-                    break
-                elif choice == 1:
-                    dbtechtree_to_json()
-                    break
-                elif choice == 2:
-                    db_techtree_json_to_dat()
-                    db_objects_json_to_dat() 
-                    input(Fore.CYAN + "\n✅ Changes applied. Press Enter to continue..." + Style.RESET_ALL)
-                elif choice == 3:
-                    print(Fore.CYAN + "👋 Exiting the program." + Style.RESET_ALL)
-                    break
+            if choice == 0:
+                for dat, schema in pairs:
+                    dat_to_json_generic(dat, schema)
+                input(Fore.CYAN + "\n✅ Export done. Press Enter..." + Style.RESET_ALL)
+            elif choice == 1:
+                for dat, schema in pairs:
+                    json_to_dat_generic(dat, schema)
+                input(Fore.CYAN + "\n✅ Changes applied. Press Enter..." + Style.RESET_ALL)
+            elif choice == 2:
+                print(Fore.CYAN + "👋 Exiting..." + Style.RESET_ALL)
+                break
 
     except KeyboardInterrupt:
-        print(Fore.CYAN + "\n👋 Exiting the program." + Style.RESET_ALL)
+        print(Fore.CYAN + "\n👋 Exiting..." + Style.RESET_ALL)
 
 
 if __name__ == "__main__":
