@@ -1,0 +1,8 @@
+{
+    "name_pattern": "A - [\\x20-\\x7E]{5,60}?",
+    "fields": {
+        "gold": "0x84",
+        "wood": "0x7C"
+    }
+}
+

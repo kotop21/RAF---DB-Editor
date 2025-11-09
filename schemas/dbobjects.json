@@ -1,0 +1,8 @@
+{
+    "name_pattern": "A - [\\x20-\\x7E]{5,60}?",
+    "fields": {
+        "hp": "0x78",
+        "damage": "0xC4"
+    }
+}
+
