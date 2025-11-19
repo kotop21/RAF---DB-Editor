@@ -51,8 +51,20 @@ def json_to_dat_generic(dat_path: Path, schema_path: Path):
         print(Fore.RED + f"❌ JSON file {json_file} not found!" + Style.RESET_ALL)
         return
 
+    cleaned_lines = []
     with open(json_file, "r", encoding="utf-8") as f:
-        objects = json.load(f)
+        for line in f:
+            if "//" in line:
+                line = line.split("//", 1)[0]
+            cleaned_lines.append(line)
+
+    cleaned_json = "".join(cleaned_lines)
+
+    try:
+        objects = json.loads(cleaned_json)
+    except json.JSONDecodeError as e:
+        print(Fore.RED + f"❌ JSON parsing error: {e}" + Style.RESET_ALL)
+        return
 
     db_bytes = bytearray(Path(dat_path).read_bytes())
     updated = 0

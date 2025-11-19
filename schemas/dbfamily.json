@@ -1,8 +1,8 @@
 {
     "name_pattern": "\\b(?:[A-Z][a-z]{2,}|[A-Z]{2,3})(?: (?:[A-Z][a-z]{2,}|[A-Z]{2,3})){0,3}\\b",
     "fields": {
-        "var1": "0x64",
-        "var2": "0x68",
+        "function_id": "0x64",
+        "family_id": "0x68",
         "var3": "0x6C",
         "var4": "0x70",
         "var5": "0x74",
@@ -23,7 +23,7 @@
         "var20": "0xB4",
         "var21": "0xB8",
         "var22": "0xBC",
-        "var23": "0xC0",
+        "human_archer_against": "0xC0",
         "var24": "0xC4",
         "var25": "0xC8",
         "var26": "0xCC",
