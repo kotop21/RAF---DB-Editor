@@ -11,7 +11,6 @@ init(autoreset=True)
 
 
 def list_pairs():
-    """Автоматически находит пары (dat, schema)."""
     dat_files = list(DB_FOLDER.glob("*.dat"))
     pairs = []
     for dat in dat_files:
