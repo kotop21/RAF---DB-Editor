@@ -1,4 +1,5 @@
-# RAF - DB Editor
+# Rise and Fall Civilizations at War Tools - DB Editor
+
 ![Python 3.13](https://img.shields.io/badge/Python-3.13-blue?logo=python\&logoColor=white)
 ![uv](https://img.shields.io/badge/Build-uv-orange?logo=astral-sh)
 
